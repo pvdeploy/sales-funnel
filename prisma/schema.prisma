@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      UserRole
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Lead {
+  id           String      @id @default(uuid())
+  companyName  String      @map("company_name")
+  contactName  String      @map("contact_name")
+  email        String
+  phone        String?
+  leadSource   LeadSource  @map("lead_source")
+  industry     String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  
+  deals        Deal[]
+  activities   Activity[]
+
+  @@map("leads")
+}
+
+model Deal {
+  id          String     @id @default(uuid())
+  leadId      String     @map("lead_id")
+  dealName    String     @map("deal_name")
+  dealValue   Decimal    @map("deal_value")
+  currency    String     @default("USD")
+  status      DealStatus
+  reasonLost  String?    @map("reason_lost")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  
+  lead        Lead       @relation(fields: [leadId], references: [id])
+  dealStages  DealStage[]
+  activities  Activity[]
+
+  @@map("deals")
+}
+
+model Activity {
+  id           String       @id @default(uuid())
+  leadId       String       @map("lead_id")
+  dealId       String?      @map("deal_id")
+  activityType ActivityType @map("activity_type")
+  description  String?
+  activityDate DateTime     @map("activity_date")
+  
+  lead         Lead         @relation(fields: [leadId], references: [id])
+  deal         Deal?        @relation(fields: [dealId], references: [id])
+
+  @@map("activities")
+}
+
+model DealStage {
+  id        String      @id @default(uuid())
+  dealId    String      @map("deal_id")
+  stage     FunnelStage
+  entryDate DateTime    @default(now()) @map("entry_date")
+  exitDate  DateTime?   @map("exit_date")
+  
+  deal      Deal        @relation(fields: [dealId], references: [id])
+
+  @@map("deal_stages")
+}
+
+// Enums
+enum UserRole {
+  SALES_REP
+  ADMIN
+}
+
+enum LeadSource {
+  REFERRAL
+  COLD_OUTREACH
+  EVENT
+  WEBSITE
+  OTHER
+}
+
+enum DealStatus {
+  OPEN
+  WON
+  LOST
+}
+
+enum ActivityType {
+  EMAIL
+  CALL
+  MEETING
+  FOLLOW_UP
+  DEMO
+}
+
+enum FunnelStage {
+  CONTACTED
+  MEETING_SCHEDULED
+  PROPOSAL_SENT
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
