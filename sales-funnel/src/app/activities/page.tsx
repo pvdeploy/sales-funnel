@@ -5,6 +5,7 @@ import Navigation from '@/components/Navigation';
 import ActivitiesList from '@/components/ActivitiesList';
 import LogActivityForm from '@/components/LogActivityForm';
 import { Activity } from '@/components/LogActivityForm';
+import Modal from '@/components/Modal';
 
 export default function ActivitiesPage() {
   const [showLogActivityForm, setShowLogActivityForm] = useState(false);
@@ -31,15 +32,13 @@ export default function ActivitiesPage() {
               onClick={handleLogActivityClick}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              {showLogActivityForm ? 'Cancel' : 'Log New Activity'}
+              Log New Activity
             </button>
           </div>
           
-          {showLogActivityForm && (
-            <div className="mt-6">
-              <LogActivityForm onLogActivity={handleLogActivity} />
-            </div>
-          )}
+          <Modal isOpen={showLogActivityForm} onClose={handleLogActivityClick}>
+            <LogActivityForm onLogActivity={handleLogActivity} />
+          </Modal>
           
           <div className="mt-6">
             <ActivitiesList />
