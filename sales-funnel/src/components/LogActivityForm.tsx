@@ -19,6 +19,7 @@ export type Activity = {
   companyName: string;
   description: string;
   date: string;
+  leadId?: number;
 };
 
 const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
@@ -29,6 +30,7 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
     companyName: '',
     description: '',
     date: new Date().toISOString(),
+    leadId: 1,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -51,6 +53,7 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
         body: JSON.stringify({
           ...activity,
           activityType: activity.type,
+          activityDate: activity.date,
         }),
       });
 
@@ -64,6 +67,7 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
           companyName: '',
           description: '',
           date: new Date().toISOString(),
+          leadId: 1,
         });
       } else {
         console.error('Error logging activity');
