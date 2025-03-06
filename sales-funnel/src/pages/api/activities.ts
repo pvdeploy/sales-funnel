@@ -2,9 +2,32 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
+  // GET method for fetching all activities
+  if (req.method === 'GET') {
+    try {
+      const activities = await prisma.activity.findMany({
+        orderBy: {
+          activityDate: 'desc',
+        },
+        include: {
+          lead: true, // Include the related lead information
+          deal: true, // Include the related deal information if available
+        },
+      });
+      
+      res.status(200).json(activities);
+    } catch (error) {
+      console.error('API Error details:', error);
+      res.status(500).json({ error: 'Error fetching activities' });
+    }
+  } 
+  // POST method for creating a new activity
+  else if (req.method === 'POST') {
     try {
       console.log('Request body:', JSON.stringify(req.body, null, 2));
+      
+      // Ensure leadId is a string
+      const leadId = req.body.leadId ? String(req.body.leadId) : "1";
       
       // Create a data object with the correct field mappings from schema
       const data = {
@@ -16,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         companyName: req.body.companyName,
         lead: {
           connect: { 
-            id: req.body.leadId || "1" // Make sure to use a string for UUID
+            id: leadId // Now leadId is guaranteed to be a string
           }
         }
       };
@@ -34,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ error: 'Error creating activity' });
     }
   } else {
-    res.setHeader('Allow', ['POST']);
+    res.setHeader('Allow', ['GET', 'POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 } 
