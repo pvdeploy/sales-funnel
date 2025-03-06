@@ -23,7 +23,42 @@ ChartJS.register(
   Legend
 );
 
-const FunnelChart = () => {
+interface FunnelChartProps {
+  startDate?: Date | null;
+  endDate?: Date | null;
+}
+
+// Mock data for different date ranges
+const getMockDataForDateRange = (startDate: Date | null, endDate: Date | null) => {
+  // In a real application, this would be an API call with the date range as parameters
+  
+  // For demo purposes, we'll return different data based on the date range length
+  if (!startDate || !endDate) {
+    return [100, 75, 50, 30, 15]; // Default data
+  }
+  
+  const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays <= 1) {
+    // Daily view - fewer leads, earlier in the funnel
+    return [30, 15, 8, 4, 2];
+  } else if (diffDays <= 7) {
+    // Weekly view
+    return [65, 45, 30, 18, 8];
+  } else if (diffDays <= 30) {
+    // Monthly view
+    return [120, 85, 60, 35, 20];
+  } else if (diffDays <= 90) {
+    // Quarterly view
+    return [250, 180, 120, 70, 40];
+  } else {
+    // Yearly view
+    return [500, 350, 220, 120, 70];
+  }
+};
+
+const FunnelChart = ({ startDate, endDate }: FunnelChartProps) => {
   const [chartData, setChartData] = useState<ChartData<'bar'>>({
     labels: [],
     datasets: [],
@@ -32,13 +67,22 @@ const FunnelChart = () => {
   const [chartOptions, setChartOptions] = useState<ChartOptions<'bar'>>({});
 
   useEffect(() => {
-    // In a real application, this data would come from the database
+    // Get data based on the date range
+    const funnelData = getMockDataForDateRange(startDate || null, endDate || null);
+    
+    // Calculate conversion rates between stages
+    const conversionRates: string[] = [];
+    for (let i = 1; i < funnelData.length; i++) {
+      const rate = funnelData[i] / funnelData[i-1] * 100;
+      conversionRates.push(rate.toFixed(1) + '%');
+    }
+    
     setChartData({
       labels: ['Contacted', 'Meeting Scheduled', 'Proposal Sent', 'Negotiation', 'Closed-Won'],
       datasets: [
         {
           label: 'Number of Deals',
-          data: [100, 75, 50, 30, 15],
+          data: funnelData,
           backgroundColor: [
             'rgba(99, 102, 241, 0.8)',
             'rgba(99, 102, 241, 0.6)',
@@ -77,6 +121,17 @@ const FunnelChart = () => {
             weight: 'bold'
           }
         },
+        tooltip: {
+          callbacks: {
+            afterLabel: function(context) {
+              const dataIndex = context.dataIndex;
+              if (dataIndex < conversionRates.length) {
+                return `Conversion rate: ${conversionRates[dataIndex]}`;
+              }
+              return '';
+            }
+          }
+        }
       },
       scales: {
         y: {
@@ -88,7 +143,7 @@ const FunnelChart = () => {
         },
       },
     });
-  }, []);
+  }, [startDate, endDate]);
 
   return (
     <div className="relative w-full h-[400px]">
