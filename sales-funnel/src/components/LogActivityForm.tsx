@@ -13,13 +13,13 @@ interface LogActivityFormProps {
 }
 
 export type Activity = {
-  id: number;
+  id: string | number;
   type: 'EMAIL' | 'CALL' | 'MEETING' | 'FOLLOW_UP' | 'DEMO';
   contactName: string;
   companyName: string;
   description: string;
   date: string;
-  leadId?: number;
+  leadId?: string;
 };
 
 const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
@@ -30,7 +30,7 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
     companyName: '',
     description: '',
     date: new Date().toISOString(),
-    leadId: 1,
+    leadId: "1",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -50,6 +50,7 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
         ...activity,
         // Map the type field properly
         activityDate: activity.date, // Make sure the field name matches
+        leadId: String(activity.leadId) // Ensure leadId is a string
       };
       
       console.log('Sending data to API:', apiData);
@@ -72,7 +73,7 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
           companyName: '',
           description: '',
           date: new Date().toISOString(),
-          leadId: 1,
+          leadId: "1",
         });
       } else {
         const errorData = await response.json();
