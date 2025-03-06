@@ -86,46 +86,67 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-        <select
-          name="currency"
-          value={deal.currency}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="JPY">JPY</option>
-        </select>
+        <div className="relative">
+          <select
+            name="currency"
+            value={deal.currency}
+            onChange={handleChange}
+            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
+          >
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-        <select
-          name="status"
-          value={deal.status}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="OPEN">Open</option>
-          <option value="WON">Won</option>
-          <option value="LOST">Lost</option>
-        </select>
+        <div className="relative">
+          <select
+            name="status"
+            value={deal.status}
+            onChange={handleChange}
+            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
+          >
+            <option value="OPEN">Open</option>
+            <option value="WON">Won</option>
+            <option value="LOST">Lost</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Stage</label>
-        <select
-          name="stage"
-          value={deal.stage}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="CONTACTED">Contacted</option>
-          <option value="MEETING_SCHEDULED">Meeting Scheduled</option>
-          <option value="PROPOSAL_SENT">Proposal Sent</option>
-          <option value="NEGOTIATION">Negotiation</option>
-          <option value="CLOSED_WON">Closed Won</option>
-          <option value="CLOSED_LOST">Closed Lost</option>
-        </select>
+        <div className="relative">
+          <select
+            name="stage"
+            value={deal.stage}
+            onChange={handleChange}
+            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
+          >
+            <option value="CONTACTED">Contacted</option>
+            <option value="MEETING_SCHEDULED">Meeting Scheduled</option>
+            <option value="PROPOSAL_SENT">Proposal Sent</option>
+            <option value="NEGOTIATION">Negotiation</option>
+            <option value="CLOSED_WON">Closed Won</option>
+            <option value="CLOSED_LOST">Closed Lost</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
       </div>
       <div className="flex justify-end">
         <button
