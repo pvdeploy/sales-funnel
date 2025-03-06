@@ -61,16 +61,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Create a data object with the correct field mappings from schema
       const data = {
         activityType: req.body.type, // Map to enum
-        description: req.body.description,
+        description: req.body.description || '',
         activityDate: new Date(req.body.date), // Use the date from the form
-        // Required fields from schema
-        contactName: req.body.contactName,
-        companyName: req.body.companyName,
+        // Connect to the lead - this is the required relation
         lead: {
           connect: { 
             id: leadId
           }
         }
+        // Note: contactName and companyName are not in the schema, so they're removed
       };
       
       console.log('Data being sent to Prisma:', JSON.stringify(data, null, 2));
