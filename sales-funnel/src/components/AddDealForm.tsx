@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { prisma } from '@/lib/prisma';
 
 interface AddDealFormProps {
   onAddDeal: (deal: Deal) => void;
@@ -43,19 +44,36 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
     setDeal((prevDeal) => ({ ...prevDeal, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddDeal(deal);
-    setDeal({
-      id: Date.now(),
-      leadName: '',
-      dealName: '',
-      value: 0,
-      currency: 'USD',
-      status: 'OPEN',
-      stage: 'CONTACTED',
-      createdAt: new Date().toISOString(),
-    });
+    try {
+      const response = await fetch('/api/deals', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(deal),
+      });
+
+      if (response.ok) {
+        const newDeal = await response.json();
+        onAddDeal(newDeal);
+        setDeal({
+          id: Date.now(),
+          leadName: '',
+          dealName: '',
+          value: 0,
+          currency: 'USD',
+          status: 'OPEN',
+          stage: 'CONTACTED',
+          createdAt: new Date().toISOString(),
+        });
+      } else {
+        console.error('Error creating deal');
+      }
+    } catch (error) {
+      console.error('Error creating deal:', error);
+    }
   };
 
   return (
