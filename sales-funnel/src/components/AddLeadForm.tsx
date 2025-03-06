@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { prisma } from '@/lib/prisma';
 
 interface Lead {
   id: number;
@@ -45,19 +46,36 @@ const AddLeadForm = ({ onAddLead }: AddLeadFormProps) => {
     setLead((prevLead) => ({ ...prevLead, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddLead(lead);
-    setLead({
-      id: Date.now(),
-      companyName: '',
-      contactName: '',
-      email: '',
-      phone: '',
-      leadSource: 'REFERRAL',
-      industry: '',
-      createdAt: new Date().toISOString(),
-    });
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(lead),
+      });
+
+      if (response.ok) {
+        const newLead = await response.json();
+        onAddLead(newLead);
+        setLead({
+          id: Date.now(),
+          companyName: '',
+          contactName: '',
+          email: '',
+          phone: '',
+          leadSource: 'REFERRAL',
+          industry: '',
+          createdAt: new Date().toISOString(),
+        });
+      } else {
+        console.error('Error creating lead');
+      }
+    } catch (error) {
+      console.error('Error creating lead:', error);
+    }
   };
 
   return (
