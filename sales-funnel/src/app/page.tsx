@@ -1,7 +1,7 @@
 import Navigation from '@/components/Navigation';
 import DashboardStats from '@/components/DashboardStats';
 import FunnelChart from '@/components/FunnelChart';
-import RecentActivity from '@/components/ActivitiesList';
+import RecentActivity from '@/components/RecentActivity';
 
 export default function Home() {
   return (
@@ -15,9 +15,8 @@ export default function Home() {
             <DashboardStats />
           </div>
           
-          <div className="mt-6 bg-white p-4 rounded-lg shadow">
-            <h2 className="text-lg font-medium text-gray-900">Sales Funnel</h2>
-            <div className="mt-4 h-64">
+          <div className="mt-6 bg-white p-6 rounded-lg shadow">
+            <div className="w-full">
               <FunnelChart />
             </div>
           </div>
