@@ -21,6 +21,7 @@ export type Deal = {
   status: 'OPEN' | 'WON' | 'LOST';
   stage: string;
   createdAt: string;
+  leadId?: number;
 };
 
 const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
@@ -33,6 +34,7 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
     status: 'OPEN',
     stage: 'CONTACTED',
     createdAt: new Date().toISOString(),
+    leadId: 1,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +69,7 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
           status: 'OPEN',
           stage: 'CONTACTED',
           createdAt: new Date().toISOString(),
+          leadId: 1,
         });
       } else {
         console.error('Error creating deal');
