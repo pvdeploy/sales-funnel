@@ -5,7 +5,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     try {
       const deal = await prisma.deal.create({
-        data: req.body,
+        data: {
+          dealName: req.body.dealName,
+          dealValue: req.body.value,
+          currency: req.body.currency,
+          status: req.body.status,
+          stage: req.body.stage,
+          createdAt: new Date(req.body.createdAt),
+          lead: {
+            connect: {
+              id: req.body.leadId || 1 // Connect to a lead using the leadId, default to 1 if not provided
+            }
+          }
+        },
       });
       res.status(200).json(deal);
     } catch (error) {
