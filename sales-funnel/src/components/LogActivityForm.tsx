@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 
 interface LogActivityFormProps {
   onLogActivity: (activity: Activity) => void;
@@ -14,8 +15,6 @@ interface LogActivityFormProps {
 export type Activity = {
   id: string | number;
   type: 'EMAIL' | 'CALL' | 'MEETING' | 'FOLLOW_UP' | 'DEMO';
-  contactName: string;
-  companyName: string;
   description: string;
   date: string;
   leadId?: string;
@@ -25,8 +24,6 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
   const [activity, setActivity] = useState<Activity>({
     id: Date.now(),
     type: 'EMAIL',
-    contactName: '',
-    companyName: '',
     description: '',
     date: new Date().toISOString(),
     leadId: "",
@@ -54,7 +51,7 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
       const apiData = {
         ...activity,
         activityDate: activity.date,
-        leadId: activity.leadId || undefined
+        leadId: activity.leadId || undefined // Only send leadId if it's not empty
       };
       
       console.log('Sending data to API:', apiData);
@@ -73,8 +70,6 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
         setActivity({
           id: Date.now(),
           type: 'EMAIL',
-          contactName: '',
-          companyName: '',
           description: '',
           date: new Date().toISOString(),
           leadId: "",
@@ -120,34 +115,25 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="contactName">Contact Name</Label>
-        <Input
-          id="contactName"
-          name="contactName"
-          value={activity.contactName}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="companyName">Company Name</Label>
-        <Input
-          id="companyName"
-          name="companyName"
-          value={activity.companyName}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Input
+        <Textarea
           id="description"
           name="description"
           value={activity.description}
           onChange={handleChange}
+          className="min-h-[100px]"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="date">Date</Label>
+        <Input
+          id="date"
+          name="date"
+          type="datetime-local"
+          value={activity.date.slice(0, 16)} // Format date for datetime-local input
+          onChange={handleChange}
+          required
         />
       </div>
 
