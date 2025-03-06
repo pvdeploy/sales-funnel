@@ -5,6 +5,7 @@ import Navigation from '@/components/Navigation';
 import LeadsList from '@/components/LeadsList';
 import AddLeadForm from '@/components/AddLeadForm';
 import { Lead } from '@/components/AddLeadForm';
+import Modal from '@/components/Modal';
 
 export default function LeadsPage() {
   const [showAddLeadForm, setShowAddLeadForm] = useState(false);
@@ -35,11 +36,9 @@ export default function LeadsPage() {
             </button>
           </div>
           
-          {showAddLeadForm && (
-            <div className="mt-6">
-              <AddLeadForm onAddLead={handleAddLead} />
-            </div>
-          )}
+          <Modal isOpen={showAddLeadForm} onClose={handleAddLeadClick}>
+            <AddLeadForm onAddLead={handleAddLead} />
+          </Modal>
           
           <div className="mt-6">
             <LeadsList />
