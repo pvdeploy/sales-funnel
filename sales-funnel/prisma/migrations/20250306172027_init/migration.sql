@@ -36,6 +36,16 @@ CREATE TABLE "deals" (
 );
 
 -- CreateTable
+CREATE TABLE "deal_stages" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "deal_id" TEXT NOT NULL,
+    "stage" TEXT NOT NULL,
+    "entry_date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "exit_date" DATETIME,
+    CONSTRAINT "deal_stages_deal_id_fkey" FOREIGN KEY ("deal_id") REFERENCES "deals" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
 CREATE TABLE "activities" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "lead_id" TEXT NOT NULL,
@@ -45,16 +55,6 @@ CREATE TABLE "activities" (
     "activity_date" DATETIME NOT NULL,
     CONSTRAINT "activities_lead_id_fkey" FOREIGN KEY ("lead_id") REFERENCES "leads" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "activities_deal_id_fkey" FOREIGN KEY ("deal_id") REFERENCES "deals" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "deal_stages" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "deal_id" TEXT NOT NULL,
-    "stage" TEXT NOT NULL,
-    "entry_date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "exit_date" DATETIME,
-    CONSTRAINT "deal_stages_deal_id_fkey" FOREIGN KEY ("deal_id") REFERENCES "deals" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex

@@ -1,79 +1,97 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { 
+  MoreHorizontal, 
+  Pencil, 
+  Trash2 
+} from 'lucide-react';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from '@/components/ui/button';
 
 interface Lead {
-  id: number;
+  id: string; // Changed to string to match UUID from database
   companyName: string;
   contactName: string;
   email: string;
-  phone: string;
+  phone: string | null;
   leadSource: string;
-  industry: string;
+  industry: string | null;
   createdAt: string;
 }
 
 const LeadsList = () => {
-  // This would come from your database in a real application
-  const [leads, setLeads] = useState<Lead[]>([
-    {
-      id: 1,
-      companyName: 'Acme Corp',
-      contactName: 'John Doe',
-      email: 'john@acmecorp.com',
-      phone: '+1 555-123-4567',
-      leadSource: 'REFERRAL',
-      industry: 'Technology',
-      createdAt: '2023-05-01T10:00:00',
-    },
-    {
-      id: 2,
-      companyName: 'Widget Inc',
-      contactName: 'Jane Smith',
-      email: 'jane@widgetinc.com',
-      phone: '+1 555-765-4321',
-      leadSource: 'WEBSITE',
-      industry: 'Manufacturing',
-      createdAt: '2023-05-02T14:30:00',
-    },
-    {
-      id: 3,
-      companyName: 'Tech Solutions',
-      contactName: 'Robert Johnson',
-      email: 'robert@techsolutions.com',
-      phone: '+1 555-987-6543',
-      leadSource: 'EVENT',
-      industry: 'Information Technology',
-      createdAt: '2023-05-03T09:15:00',
-    },
-    {
-      id: 4,
-      companyName: 'Global Systems',
-      contactName: 'Sarah Williams',
-      email: 'sarah@globalsystems.com',
-      phone: '+1 555-456-7890',
-      leadSource: 'COLD_OUTREACH',
-      industry: 'Healthcare',
-      createdAt: '2023-05-04T11:45:00',
-    },
-    {
-      id: 5,
-      companyName: 'Data Insights',
-      contactName: 'Michael Brown',
-      email: 'michael@datainsights.com',
-      phone: '+1 555-234-5678',
-      leadSource: 'OTHER',
-      industry: 'Finance',
-      createdAt: '2023-05-05T16:00:00',
-    },
-  ]);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Function to handle lead deletion
+  const handleDeleteLead = async (id: string) => {
+    // Confirm before deletion
+    if (!confirm('Are you sure you want to delete this lead?')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/leads/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Remove the lead from the state
+        setLeads(leads.filter(lead => lead.id !== id));
+      } else {
+        console.error('Failed to delete lead');
+      }
+    } catch (error) {
+      console.error('Error deleting lead:', error);
+    }
+  };
+
+  // Function to handle lead edit (placeholder for now)
+  const handleEditLead = (id: string) => {
+    alert('Edit feature will be implemented soon!');
+  };
+
+  // Fetch leads from the API
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/leads');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch leads');
+        }
+        
+        const data = await response.json();
+        setLeads(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching leads:', err);
+        setError('Failed to load leads. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeads();
+  }, []);
 
   // State to store formatted dates
-  const [formattedDates, setFormattedDates] = useState<Record<number, string>>({});
+  const [formattedDates, setFormattedDates] = useState<Record<string, string>>({});
 
   // Format dates on the client side only
   useEffect(() => {
-    const dates: Record<number, string> = {};
+    const dates: Record<string, string> = {};
     leads.forEach(lead => {
       const date = new Date(lead.createdAt);
       dates[lead.id] = new Intl.DateTimeFormat('en-US', {
@@ -99,6 +117,21 @@ const LeadsList = () => {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  // If loading, show a loading state
+  if (loading) {
+    return <div className="flex justify-center py-10">Loading leads...</div>;
+  }
+
+  // If error, show an error message
+  if (error) {
+    return <div className="text-red-500 py-10">{error}</div>;
+  }
+
+  // If no leads, show a message
+  if (leads.length === 0) {
+    return <div className="py-10">No leads found. Create your first lead!</div>;
+  }
 
   return (
     <div className="flex flex-col">
@@ -138,7 +171,7 @@ const LeadsList = () => {
                   >
                     Created
                   </th>
-                  <th scope="col" className="relative px-6 py-3">
+                  <th scope="col" className="relative px-6 py-3 w-10">
                     <span className="sr-only">Actions</span>
                   </th>
                 </tr>
@@ -168,14 +201,32 @@ const LeadsList = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {lead.industry}
+                      {lead.industry || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formattedDates[lead.id] || 'Loading...'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-4">View</button>
-                      <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleEditLead(lead.id)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteLead(lead.id)}>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}

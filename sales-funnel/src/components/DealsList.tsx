@@ -1,81 +1,102 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { 
+  MoreHorizontal, 
+  Pencil, 
+  Trash2 
+} from 'lucide-react';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from '@/components/ui/button';
 
 interface Deal {
-  id: number;
-  leadName: string;
+  id: string; // Changed to string to match UUID from database
   dealName: string;
-  value: number;
+  dealValue: number;
   currency: string;
   status: 'OPEN' | 'WON' | 'LOST';
   stage: string;
   createdAt: string;
+  lead: {
+    id: string;
+    companyName: string;
+  };
 }
 
 const DealsList = () => {
-  // This would come from your database in a real application
-  const [deals, setDeals] = useState<Deal[]>([
-    {
-      id: 1,
-      leadName: 'Acme Corp',
-      dealName: 'Enterprise License',
-      value: 50000,
-      currency: 'USD',
-      status: 'OPEN',
-      stage: 'PROPOSAL_SENT',
-      createdAt: '2023-05-01T10:00:00',
-    },
-    {
-      id: 2,
-      leadName: 'Widget Inc',
-      dealName: 'Annual Subscription',
-      value: 25000,
-      currency: 'USD',
-      status: 'OPEN',
-      stage: 'NEGOTIATION',
-      createdAt: '2023-05-05T14:30:00',
-    },
-    {
-      id: 3,
-      leadName: 'Tech Solutions',
-      dealName: 'Custom Implementation',
-      value: 75000,
-      currency: 'USD',
-      status: 'WON',
-      stage: 'CLOSED_WON',
-      createdAt: '2023-04-15T09:15:00',
-    },
-    {
-      id: 4,
-      leadName: 'Global Systems',
-      dealName: 'Starter Package',
-      value: 10000,
-      currency: 'USD',
-      status: 'OPEN',
-      stage: 'MEETING_SCHEDULED',
-      createdAt: '2023-05-10T11:45:00',
-    },
-    {
-      id: 5,
-      leadName: 'Data Insights',
-      dealName: 'Enterprise Solution',
-      value: 60000,
-      currency: 'USD',
-      status: 'LOST',
-      stage: 'CLOSED_LOST',
-      createdAt: '2023-04-20T16:00:00',
-    },
-  ]);
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Function to handle deal deletion
+  const handleDeleteDeal = async (id: string) => {
+    // Confirm before deletion
+    if (!confirm('Are you sure you want to delete this deal?')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/deals/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Remove the deal from the state
+        setDeals(deals.filter(deal => deal.id !== id));
+      } else {
+        console.error('Failed to delete deal');
+      }
+    } catch (error) {
+      console.error('Error deleting deal:', error);
+    }
+  };
+
+  // Function to handle deal edit (placeholder for now)
+  const handleEditDeal = (id: string) => {
+    alert('Edit feature will be implemented soon!');
+  };
+
+  // Fetch deals from the API
+  useEffect(() => {
+    const fetchDeals = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/deals');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch deals');
+        }
+        
+        const data = await response.json();
+        setDeals(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching deals:', err);
+        setError('Failed to load deals. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDeals();
+  }, []);
 
   // State to store formatted dates and currency values
-  const [formattedDates, setFormattedDates] = useState<Record<number, string>>({});
-  const [formattedCurrencies, setFormattedCurrencies] = useState<Record<number, string>>({});
+  const [formattedDates, setFormattedDates] = useState<Record<string, string>>({});
+  const [formattedCurrencies, setFormattedCurrencies] = useState<Record<string, string>>({});
 
   // Format dates and currencies on the client side only
   useEffect(() => {
-    const dates: Record<number, string> = {};
-    const currencies: Record<number, string> = {};
+    const dates: Record<string, string> = {};
+    const currencies: Record<string, string> = {};
     
     deals.forEach(deal => {
       // Format dates
@@ -90,7 +111,7 @@ const DealsList = () => {
       currencies[deal.id] = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: deal.currency,
-      }).format(deal.value);
+      }).format(deal.dealValue);
     });
     
     setFormattedDates(dates);
@@ -128,6 +149,21 @@ const DealsList = () => {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  // If loading, show a loading state
+  if (loading) {
+    return <div className="flex justify-center py-10">Loading deals...</div>;
+  }
+
+  // If error, show an error message
+  if (error) {
+    return <div className="text-red-500 py-10">{error}</div>;
+  }
+
+  // If no deals, show a message
+  if (deals.length === 0) {
+    return <div className="py-10">No deals found. Create your first deal!</div>;
+  }
 
   return (
     <div className="flex flex-col">
@@ -173,7 +209,7 @@ const DealsList = () => {
                   >
                     Created
                   </th>
-                  <th scope="col" className="relative px-6 py-3">
+                  <th scope="col" className="relative px-6 py-3 w-10">
                     <span className="sr-only">Actions</span>
                   </th>
                 </tr>
@@ -185,7 +221,7 @@ const DealsList = () => {
                       <div className="text-sm font-medium text-gray-900">{deal.dealName}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{deal.leadName}</div>
+                      <div className="text-sm text-gray-900">{deal.lead?.companyName || 'N/A'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
@@ -204,18 +240,36 @@ const DealsList = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStageBadgeColor(
-                          deal.stage
+                          deal.stage || ''
                         )}`}
                       >
-                        {deal.stage.replace('_', ' ')}
+                        {deal.stage?.replace('_', ' ') || 'N/A'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formattedDates[deal.id] || 'Loading...'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-4">View</button>
-                      <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleEditDeal(deal.id)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteDeal(deal.id)}>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}

@@ -1,6 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { prisma } from '@/lib/prisma';
 
 interface Lead {
   id: number;
@@ -31,103 +37,124 @@ const AddLeadForm = ({ onAddLead }: AddLeadFormProps) => {
     createdAt: new Date().toISOString(),
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLead((prevLead) => ({ ...prevLead, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSelectChange = (value: string, name: string) => {
+    setLead((prevLead) => ({ ...prevLead, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddLead(lead);
-    setLead({
-      id: Date.now(),
-      companyName: '',
-      contactName: '',
-      email: '',
-      phone: '',
-      leadSource: 'REFERRAL',
-      industry: '',
-      createdAt: new Date().toISOString(),
-    });
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(lead),
+      });
+
+      if (response.ok) {
+        const newLead = await response.json();
+        onAddLead(newLead);
+        setLead({
+          id: Date.now(),
+          companyName: '',
+          contactName: '',
+          email: '',
+          phone: '',
+          leadSource: 'REFERRAL',
+          industry: '',
+          createdAt: new Date().toISOString(),
+        });
+      } else {
+        console.error('Error creating lead');
+      }
+    } catch (error) {
+      console.error('Error creating lead:', error);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Company Name</label>
-        <input
-          type="text"
+      <div className="space-y-2">
+        <Label htmlFor="companyName">Company Name</Label>
+        <Input
+          id="companyName"
           name="companyName"
           value={lead.companyName}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
           required
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Contact Name</label>
-        <input
-          type="text"
+      
+      <div className="space-y-2">
+        <Label htmlFor="contactName">Contact Name</Label>
+        <Input
+          id="contactName"
           name="contactName"
           value={lead.contactName}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
           required
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Email</label>
-        <input
+      
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
           type="email"
           name="email"
           value={lead.email}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
           required
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Phone</label>
-        <input
-          type="text"
+      
+      <div className="space-y-2">
+        <Label htmlFor="phone">Phone</Label>
+        <Input
+          id="phone"
           name="phone"
           value={lead.phone}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Lead Source</label>
-        <select
-          name="leadSource"
-          value={lead.leadSource}
-          onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+      
+      <div className="space-y-2">
+        <Label htmlFor="leadSource">Lead Source</Label>
+        <Select 
+          value={lead.leadSource} 
+          onValueChange={(value) => handleSelectChange(value, 'leadSource')}
         >
-          <option value="REFERRAL">Referral</option>
-          <option value="COLD_OUTREACH">Cold Outreach</option>
-          <option value="EVENT">Event</option>
-          <option value="WEBSITE">Website</option>
-          <option value="OTHER">Other</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select lead source" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="REFERRAL">Referral</SelectItem>
+            <SelectItem value="COLD_OUTREACH">Cold Outreach</SelectItem>
+            <SelectItem value="EVENT">Event</SelectItem>
+            <SelectItem value="WEBSITE">Website</SelectItem>
+            <SelectItem value="OTHER">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Industry</label>
-        <input
-          type="text"
+      
+      <div className="space-y-2">
+        <Label htmlFor="industry">Industry</Label>
+        <Input
+          id="industry"
           name="industry"
           value={lead.industry}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
         />
       </div>
+      
       <div className="flex justify-end">
-        <button
-          type="submit"
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Add Lead
-        </button>
+        <Button type="submit">Add Lead</Button>
       </div>
     </form>
   );
