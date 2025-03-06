@@ -1,6 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 
 interface AddDealFormProps {
   onAddDeal: (deal: Deal) => void;
@@ -29,8 +34,12 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
     createdAt: new Date().toISOString(),
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    setDeal((prevDeal) => ({ ...prevDeal, [name]: value }));
+  };
+
+  const handleSelectChange = (value: string, name: string) => {
     setDeal((prevDeal) => ({ ...prevDeal, [name]: value }));
   };
 
@@ -51,110 +60,91 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Lead Name</label>
-        <input
-          type="text"
+      <div className="space-y-2">
+        <Label htmlFor="leadName">Lead Name</Label>
+        <Input
+          id="leadName"
           name="leadName"
           value={deal.leadName}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Deal Name</label>
-        <input
-          type="text"
+      <div className="space-y-2">
+        <Label htmlFor="dealName">Deal Name</Label>
+        <Input
+          id="dealName"
           name="dealName"
           value={deal.dealName}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Value</label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="value">Value</Label>
+        <Input
+          id="value"
           type="number"
           name="value"
           value={deal.value}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-        <div className="relative">
-          <select
-            name="currency"
-            value={deal.currency}
-            onChange={handleChange}
-            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
-          >
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="JPY">JPY</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </div>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="currency">Currency</Label>
+        <Select
+          value={deal.currency}
+          onValueChange={(value) => handleSelectChange(value, 'currency')}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select currency" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="USD">USD</SelectItem>
+            <SelectItem value="EUR">EUR</SelectItem>
+            <SelectItem value="GBP">GBP</SelectItem>
+            <SelectItem value="JPY">JPY</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-        <div className="relative">
-          <select
-            name="status"
-            value={deal.status}
-            onChange={handleChange}
-            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
-          >
-            <option value="OPEN">Open</option>
-            <option value="WON">Won</option>
-            <option value="LOST">Lost</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </div>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="status">Status</Label>
+        <Select
+          value={deal.status}
+          onValueChange={(value) => handleSelectChange(value, 'status')}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="OPEN">Open</SelectItem>
+            <SelectItem value="WON">Won</SelectItem>
+            <SelectItem value="LOST">Lost</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Stage</label>
-        <div className="relative">
-          <select
-            name="stage"
-            value={deal.stage}
-            onChange={handleChange}
-            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
-          >
-            <option value="CONTACTED">Contacted</option>
-            <option value="MEETING_SCHEDULED">Meeting Scheduled</option>
-            <option value="PROPOSAL_SENT">Proposal Sent</option>
-            <option value="NEGOTIATION">Negotiation</option>
-            <option value="CLOSED_WON">Closed Won</option>
-            <option value="CLOSED_LOST">Closed Lost</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </div>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="stage">Stage</Label>
+        <Select
+          value={deal.stage}
+          onValueChange={(value) => handleSelectChange(value, 'stage')}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select stage" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="CONTACTED">Contacted</SelectItem>
+            <SelectItem value="MEETING_SCHEDULED">Meeting Scheduled</SelectItem>
+            <SelectItem value="PROPOSAL_SENT">Proposal Sent</SelectItem>
+            <SelectItem value="NEGOTIATION">Negotiation</SelectItem>
+            <SelectItem value="CLOSED_WON">Closed Won</SelectItem>
+            <SelectItem value="CLOSED_LOST">Closed Lost</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex justify-end">
-        <button
-          type="submit"
-          className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Add Deal
-        </button>
+        <Button type="submit">Add Deal</Button>
       </div>
     </form>
   );
