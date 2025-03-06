@@ -46,34 +46,34 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Contact Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Contact Name</label>
         <input
           type="text"
           name="contactName"
           value={activity.contactName}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Company Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
         <input
           type="text"
           name="companyName"
           value={activity.companyName}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Activity Type</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Activity Type</label>
         <select
           name="type"
           value={activity.type}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="EMAIL">Email</option>
           <option value="CALL">Call</option>
@@ -83,19 +83,19 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
         <input
           type="text"
           name="description"
           value={activity.description}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
       <div className="flex justify-end">
         <button
           type="submit"
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Log Activity
         </button>
