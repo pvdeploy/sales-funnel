@@ -60,6 +60,7 @@ const FunnelChart = () => {
 
     setChartOptions({
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: 'top' as const,
@@ -67,6 +68,14 @@ const FunnelChart = () => {
         title: {
           display: true,
           text: 'Sales Funnel',
+          padding: {
+            top: 10,
+            bottom: 20
+          },
+          font: {
+            size: 16,
+            weight: 'bold'
+          }
         },
       },
       scales: {
@@ -82,7 +91,7 @@ const FunnelChart = () => {
   }, []);
 
   return (
-    <div>
+    <div className="relative w-full h-[400px]">
       {chartData.labels && chartData.labels.length > 0 ? (
         <Bar options={chartOptions} data={chartData} />
       ) : (
