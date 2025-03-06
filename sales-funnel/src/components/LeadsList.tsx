@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Lead {
   id: number;
@@ -68,14 +68,22 @@ const LeadsList = () => {
     },
   ]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(date);
-  };
+  // State to store formatted dates
+  const [formattedDates, setFormattedDates] = useState<Record<number, string>>({});
+
+  // Format dates on the client side only
+  useEffect(() => {
+    const dates: Record<number, string> = {};
+    leads.forEach(lead => {
+      const date = new Date(lead.createdAt);
+      dates[lead.id] = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }).format(date);
+    });
+    setFormattedDates(dates);
+  }, [leads]);
 
   const getSourceBadgeColor = (source: string) => {
     switch (source) {
@@ -163,7 +171,7 @@ const LeadsList = () => {
                       {lead.industry}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(lead.createdAt)}
+                      {formattedDates[lead.id] || 'Loading...'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button className="text-indigo-600 hover:text-indigo-900 mr-4">View</button>
