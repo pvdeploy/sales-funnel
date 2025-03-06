@@ -48,7 +48,10 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(activity),
+        body: JSON.stringify({
+          ...activity,
+          activityType: activity.type,
+        }),
       });
 
       if (response.ok) {
