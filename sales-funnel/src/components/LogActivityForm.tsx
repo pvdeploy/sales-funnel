@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { prisma } from '@/lib/prisma';
 
 interface LogActivityFormProps {
   onLogActivity: (activity: Activity) => void;
@@ -39,17 +40,34 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
     setActivity((prevActivity) => ({ ...prevActivity, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogActivity(activity);
-    setActivity({
-      id: Date.now(),
-      type: 'EMAIL',
-      contactName: '',
-      companyName: '',
-      description: '',
-      date: new Date().toISOString(),
-    });
+    try {
+      const response = await fetch('/api/activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(activity),
+      });
+
+      if (response.ok) {
+        const newActivity = await response.json();
+        onLogActivity(newActivity);
+        setActivity({
+          id: Date.now(),
+          type: 'EMAIL',
+          contactName: '',
+          companyName: '',
+          description: '',
+          date: new Date().toISOString(),
+        });
+      } else {
+        console.error('Error logging activity');
+      }
+    } catch (error) {
+      console.error('Error logging activity:', error);
+    }
   };
 
   return (
