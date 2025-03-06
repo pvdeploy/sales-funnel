@@ -26,8 +26,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       console.log('Request body:', JSON.stringify(req.body, null, 2));
       
-      // Ensure leadId is a string
-      const leadId = req.body.leadId ? String(req.body.leadId) : "1";
+      // Check if a leadId was provided
+      const providedLeadId = req.body.leadId ? String(req.body.leadId) : null;
+      let leadId;
+      
+      if (providedLeadId) {
+        // If a leadId was provided, check if it exists
+        const leadExists = await prisma.lead.findUnique({
+          where: { id: providedLeadId }
+        });
+        
+        if (!leadExists) {
+          return res.status(400).json({ 
+            error: `No lead found with ID ${providedLeadId}. Please create a lead first.` 
+          });
+        }
+        
+        leadId = providedLeadId;
+      } else {
+        // If no leadId was provided, find the first lead in the database
+        const firstLead = await prisma.lead.findFirst({
+          orderBy: { createdAt: 'desc' }
+        });
+        
+        if (!firstLead) {
+          return res.status(400).json({ 
+            error: 'No leads found in the database. Please create a lead first.' 
+          });
+        }
+        
+        leadId = firstLead.id;
+      }
       
       // Create a data object with the correct field mappings from schema
       const data = {
@@ -39,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         companyName: req.body.companyName,
         lead: {
           connect: { 
-            id: leadId // Now leadId is guaranteed to be a string
+            id: leadId
           }
         }
       };
