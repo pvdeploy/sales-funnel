@@ -34,8 +34,11 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
     status: 'OPEN',
     stage: 'CONTACTED',
     createdAt: new Date().toISOString(),
-    leadId: "1",
+    leadId: "",
   });
+  
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,6 +51,9 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+    
     try {
       const response = await fetch('/api/deals', {
         method: 'POST',
@@ -56,7 +62,7 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
         },
         body: JSON.stringify({
           ...deal,
-          leadId: String(deal.leadId)
+          leadId: deal.leadId || undefined
         }),
       });
 
@@ -72,18 +78,29 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
           status: 'OPEN',
           stage: 'CONTACTED',
           createdAt: new Date().toISOString(),
-          leadId: "1",
+          leadId: "",
         });
       } else {
-        console.error('Error creating deal');
+        const errorData = await response.json();
+        setError(errorData.error || 'Error creating deal');
+        console.error('Error creating deal:', errorData);
       }
     } catch (error) {
+      setError('Failed to submit form. Please try again.');
       console.error('Error creating deal:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-800 rounded-md p-3 mb-4">
+          {error}
+        </div>
+      )}
+      
       <div className="space-y-2">
         <Label htmlFor="leadName">Lead Name</Label>
         <Input
@@ -167,9 +184,9 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="flex justify-end">
-        <Button type="submit">Add Deal</Button>
-      </div>
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? 'Submitting...' : 'Add Deal'}
+      </Button>
     </form>
   );
 };
