@@ -1,6 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { 
+  MoreHorizontal, 
+  Pencil, 
+  Trash2 
+} from 'lucide-react';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from '@/components/ui/button';
 
 interface Lead {
   id: string; // Changed to string to match UUID from database
@@ -17,6 +32,34 @@ const LeadsList = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Function to handle lead deletion
+  const handleDeleteLead = async (id: string) => {
+    // Confirm before deletion
+    if (!confirm('Are you sure you want to delete this lead?')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/leads/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Remove the lead from the state
+        setLeads(leads.filter(lead => lead.id !== id));
+      } else {
+        console.error('Failed to delete lead');
+      }
+    } catch (error) {
+      console.error('Error deleting lead:', error);
+    }
+  };
+
+  // Function to handle lead edit (placeholder for now)
+  const handleEditLead = (id: string) => {
+    alert('Edit feature will be implemented soon!');
+  };
 
   // Fetch leads from the API
   useEffect(() => {
@@ -128,7 +171,7 @@ const LeadsList = () => {
                   >
                     Created
                   </th>
-                  <th scope="col" className="relative px-6 py-3">
+                  <th scope="col" className="relative px-6 py-3 w-10">
                     <span className="sr-only">Actions</span>
                   </th>
                 </tr>
@@ -164,8 +207,26 @@ const LeadsList = () => {
                       {formattedDates[lead.id] || 'Loading...'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-4">View</button>
-                      <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleEditLead(lead.id)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteLead(lead.id)}>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}
