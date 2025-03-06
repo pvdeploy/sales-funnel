@@ -45,16 +45,21 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Format the data correctly for the API
+      const apiData = {
+        ...activity,
+        // Map the type field properly
+        activityDate: activity.date, // Make sure the field name matches
+      };
+      
+      console.log('Sending data to API:', apiData);
+      
       const response = await fetch('/api/activities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...activity,
-          activityType: activity.type,
-          activityDate: activity.date,
-        }),
+        body: JSON.stringify(apiData),
       });
 
       if (response.ok) {
@@ -70,7 +75,8 @@ const LogActivityForm = ({ onLogActivity }: LogActivityFormProps) => {
           leadId: 1,
         });
       } else {
-        console.error('Error logging activity');
+        const errorData = await response.json();
+        console.error('Error logging activity:', errorData);
       }
     } catch (error) {
       console.error('Error logging activity:', error);
