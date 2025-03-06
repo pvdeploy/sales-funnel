@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 
 const RecentActivity = () => {
   // These would come from your database in a real application
@@ -47,15 +47,23 @@ const RecentActivity = () => {
     },
   ];
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    }).format(date);
-  };
+  // State to store formatted dates
+  const [formattedDates, setFormattedDates] = useState<Record<number, string>>({});
+
+  // Format dates on the client side only
+  useEffect(() => {
+    const dates: Record<number, string> = {};
+    activities.forEach(activity => {
+      const date = new Date(activity.date);
+      dates[activity.id] = new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      }).format(date);
+    });
+    setFormattedDates(dates);
+  }, []);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -172,7 +180,8 @@ const RecentActivity = () => {
                   </p>
                 </div>
                 <div className="flex-shrink-0 text-sm text-gray-500">
-                  {formatDate(activity.date)}
+                  {/* Use a placeholder during SSR and the formatted date on client */}
+                  {formattedDates[activity.id] || 'Loading...'}
                 </div>
               </div>
             </li>
