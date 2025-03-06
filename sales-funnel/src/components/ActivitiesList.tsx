@@ -1,6 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { 
+  MoreHorizontal, 
+  Pencil, 
+  Trash2 
+} from 'lucide-react';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from '@/components/ui/button';
 
 interface Activity {
   id: string; // Changed to string to match UUID from database
@@ -23,6 +38,34 @@ const ActivitiesList = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Function to handle activity deletion
+  const handleDeleteActivity = async (id: string) => {
+    // Confirm before deletion
+    if (!confirm('Are you sure you want to delete this activity?')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/activities/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Remove the activity from the state
+        setActivities(activities.filter(activity => activity.id !== id));
+      } else {
+        console.error('Failed to delete activity');
+      }
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+    }
+  };
+
+  // Function to handle activity edit (placeholder for now)
+  const handleEditActivity = (id: string) => {
+    alert('Edit feature will be implemented soon!');
+  };
 
   // Fetch activities from the API
   useEffect(() => {
@@ -215,10 +258,32 @@ const ActivitiesList = () => {
                     {activity.activityType.replace('_', ' ')} with {activity.contactName}
                   </p>
                 </div>
-                <div className="ml-2 flex-shrink-0 flex">
-                  <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    {activity.companyName || activity.lead?.companyName}
-                  </p>
+                <div className="flex items-center">
+                  <div className="mr-4">
+                    <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      {activity.companyName || activity.lead?.companyName}
+                    </p>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleEditActivity(activity.id)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        <span>Edit</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDeleteActivity(activity.id)}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
               <div className="mt-2 sm:flex sm:justify-between">
