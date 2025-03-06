@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Deal {
   id: number;
@@ -68,21 +68,34 @@ const DealsList = () => {
     },
   ]);
 
-  const formatCurrency = (value: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-    }).format(value);
-  };
+  // State to store formatted dates and currency values
+  const [formattedDates, setFormattedDates] = useState<Record<number, string>>({});
+  const [formattedCurrencies, setFormattedCurrencies] = useState<Record<number, string>>({});
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(date);
-  };
+  // Format dates and currencies on the client side only
+  useEffect(() => {
+    const dates: Record<number, string> = {};
+    const currencies: Record<number, string> = {};
+    
+    deals.forEach(deal => {
+      // Format dates
+      const date = new Date(deal.createdAt);
+      dates[deal.id] = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }).format(date);
+      
+      // Format currencies
+      currencies[deal.id] = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: deal.currency,
+      }).format(deal.value);
+    });
+    
+    setFormattedDates(dates);
+    setFormattedCurrencies(currencies);
+  }, [deals]);
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -176,7 +189,7 @@ const DealsList = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {formatCurrency(deal.value, deal.currency)}
+                        {formattedCurrencies[deal.id] || 'Loading...'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -198,7 +211,7 @@ const DealsList = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(deal.createdAt)}
+                      {formattedDates[deal.id] || 'Loading...'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button className="text-indigo-600 hover:text-indigo-900 mr-4">View</button>
