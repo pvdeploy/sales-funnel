@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Activity {
   id: number;
@@ -80,16 +80,24 @@ const ActivitiesList = () => {
     },
   ]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    }).format(date);
-  };
+  // State to store formatted dates
+  const [formattedDates, setFormattedDates] = useState<Record<number, string>>({});
+
+  // Format dates on the client side only
+  useEffect(() => {
+    const dates: Record<number, string> = {};
+    activities.forEach(activity => {
+      const date = new Date(activity.date);
+      dates[activity.id] = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      }).format(date);
+    });
+    setFormattedDates(dates);
+  }, [activities]);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -249,7 +257,7 @@ const ActivitiesList = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <p>{formatDate(activity.date)}</p>
+                  <p>{formattedDates[activity.id] || 'Loading...'}</p>
                 </div>
               </div>
             </div>
