@@ -1,7 +1,7 @@
 import Navigation from '@/components/Navigation';
 import DashboardStats from '@/components/DashboardStats';
 import FunnelChart from '@/components/FunnelChart';
-import RecentActivity from '@/components/RecentActivity';
+import RecentActivity from '@/components/ActivitiesList';
 
 export default function Home() {
   return (
