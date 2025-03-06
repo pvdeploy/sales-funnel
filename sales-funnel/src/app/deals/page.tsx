@@ -5,6 +5,7 @@ import Navigation from '@/components/Navigation';
 import DealsList from '@/components/DealsList';
 import AddDealForm from '@/components/AddDealForm';
 import { Deal } from '@/components/AddDealForm';
+import Modal from '@/components/Modal';
 
 export default function DealsPage() {
   const [showAddDealForm, setShowAddDealForm] = useState(false);
@@ -31,15 +32,13 @@ export default function DealsPage() {
               onClick={handleAddDealClick}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              {showAddDealForm ? 'Cancel' : 'Add New Deal'}
+              Add New Deal
             </button>
           </div>
           
-          {showAddDealForm && (
-            <div className="mt-6">
-              <AddDealForm onAddDeal={handleAddDeal} />
-            </div>
-          )}
+          <Modal isOpen={showAddDealForm} onClose={handleAddDealClick}>
+            <AddDealForm onAddDeal={handleAddDeal} />
+          </Modal>
           
           <div className="mt-6">
             <DealsList />
