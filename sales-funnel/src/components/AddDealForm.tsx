@@ -52,45 +52,45 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Lead Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Lead Name</label>
         <input
           type="text"
           name="leadName"
           value={deal.leadName}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Deal Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Deal Name</label>
         <input
           type="text"
           name="dealName"
           value={deal.dealName}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Value</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Value</label>
         <input
           type="number"
           name="value"
           value={deal.value}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Currency</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
         <select
           name="currency"
           value={deal.currency}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="USD">USD</option>
           <option value="EUR">EUR</option>
@@ -99,12 +99,12 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Status</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
         <select
           name="status"
           value={deal.status}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="OPEN">Open</option>
           <option value="WON">Won</option>
@@ -112,12 +112,12 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Stage</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Stage</label>
         <select
           name="stage"
           value={deal.stage}
           onChange={handleChange}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="CONTACTED">Contacted</option>
           <option value="MEETING_SCHEDULED">Meeting Scheduled</option>
@@ -130,7 +130,7 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
       <div className="flex justify-end">
         <button
           type="submit"
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Add Deal
         </button>
