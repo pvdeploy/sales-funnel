@@ -13,7 +13,7 @@ interface AddDealFormProps {
 }
 
 export type Deal = {
-  id: number;
+  id: string | number;
   leadName: string;
   dealName: string;
   value: number;
@@ -21,7 +21,7 @@ export type Deal = {
   status: 'OPEN' | 'WON' | 'LOST';
   stage: string;
   createdAt: string;
-  leadId?: number;
+  leadId?: string;
 };
 
 const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
@@ -34,7 +34,7 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
     status: 'OPEN',
     stage: 'CONTACTED',
     createdAt: new Date().toISOString(),
-    leadId: 1,
+    leadId: "1",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +54,10 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(deal),
+        body: JSON.stringify({
+          ...deal,
+          leadId: String(deal.leadId)
+        }),
       });
 
       if (response.ok) {
@@ -69,7 +72,7 @@ const AddDealForm = ({ onAddDeal }: AddDealFormProps) => {
           status: 'OPEN',
           stage: 'CONTACTED',
           createdAt: new Date().toISOString(),
-          leadId: 1,
+          leadId: "1",
         });
       } else {
         console.error('Error creating deal');
