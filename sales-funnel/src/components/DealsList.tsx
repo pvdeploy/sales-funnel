@@ -197,10 +197,10 @@ const DealsList = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStageBadgeColor(
-                          deal.stage
+                          deal.stage || ''
                         )}`}
                       >
-                        {deal.stage.replace('_', ' ')}
+                        {deal.stage?.replace('_', ' ') || 'N/A'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
