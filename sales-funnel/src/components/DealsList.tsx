@@ -1,6 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { 
+  MoreHorizontal, 
+  Pencil, 
+  Trash2 
+} from 'lucide-react';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from '@/components/ui/button';
 
 interface Deal {
   id: string; // Changed to string to match UUID from database
@@ -20,6 +35,34 @@ const DealsList = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Function to handle deal deletion
+  const handleDeleteDeal = async (id: string) => {
+    // Confirm before deletion
+    if (!confirm('Are you sure you want to delete this deal?')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/deals/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Remove the deal from the state
+        setDeals(deals.filter(deal => deal.id !== id));
+      } else {
+        console.error('Failed to delete deal');
+      }
+    } catch (error) {
+      console.error('Error deleting deal:', error);
+    }
+  };
+
+  // Function to handle deal edit (placeholder for now)
+  const handleEditDeal = (id: string) => {
+    alert('Edit feature will be implemented soon!');
+  };
 
   // Fetch deals from the API
   useEffect(() => {
@@ -166,7 +209,7 @@ const DealsList = () => {
                   >
                     Created
                   </th>
-                  <th scope="col" className="relative px-6 py-3">
+                  <th scope="col" className="relative px-6 py-3 w-10">
                     <span className="sr-only">Actions</span>
                   </th>
                 </tr>
@@ -207,8 +250,26 @@ const DealsList = () => {
                       {formattedDates[deal.id] || 'Loading...'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-4">View</button>
-                      <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleEditDeal(deal.id)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteDeal(deal.id)}>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}
